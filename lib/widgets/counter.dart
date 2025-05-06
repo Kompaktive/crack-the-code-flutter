@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 
 class Counter extends StatefulWidget {
-  int counter;
-  final Function(int value) numFn;
+  Counter({
+    this.counter = 0,
+    this.textColor = Colors.black,
+    this.disabled,
+    required this.numFn,
+    super.key,
+  });
 
-  Counter(this.counter, this.numFn, {super.key});
+  int counter;
+  Color textColor;
+  final bool? disabled;
+  final Function(int value) numFn;
 
   @override
   State<Counter> createState() => _NumberSelectorState();
@@ -17,22 +25,33 @@ class _NumberSelectorState extends State<Counter> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         TextButton(
-          onPressed: () {
-            setState(() {
-              widget.counter = (widget.counter + 1) % 10;
-            });
-            widget.numFn(widget.counter);
-          },
+          onPressed:
+              widget.disabled == true
+                  ? null
+                  : () {
+                    setState(() {
+                      widget.counter = (widget.counter + 1) % 10;
+                      widget.textColor = Colors.black;
+                    });
+                    widget.numFn(widget.counter);
+                  },
           child: Icon(Icons.arrow_drop_up, size: 48),
         ),
-        Text(widget.counter.toString(), style: TextStyle(fontSize: 48)),
+        Text(
+          widget.counter.toString(),
+          style: TextStyle(fontSize: 48, color: widget.textColor),
+        ),
         TextButton(
-          onPressed: () {
-            setState(() {
-              widget.counter = (widget.counter - 1) % 10;
-            });
-            widget.numFn(widget.counter);
-          },
+          onPressed:
+              widget.disabled == true
+                  ? null
+                  : () {
+                    setState(() {
+                      widget.counter = (widget.counter - 1) % 10;
+                      widget.textColor = Colors.black;
+                    });
+                    widget.numFn(widget.counter);
+                  },
           child: Icon(Icons.arrow_drop_down, size: 48),
         ),
       ],

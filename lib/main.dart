@@ -19,8 +19,33 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   int guesses = 0;
   int fewestGuesses = 0;
-  final int code = Random().nextInt(10000);
+  List<int> codes = [
+    Random().nextInt(10),
+    Random().nextInt(10),
+    Random().nextInt(10),
+    Random().nextInt(10),
+  ];
   List<int> guessedCode = [0, 0, 0, 0];
+
+  Color setTextColor(int counter, int code) {
+    if (guesses == 0) return Colors.black;
+    if (counter == code) return Colors.green;
+    if ((counter - code).abs() < 3) return Colors.amber;
+    return Colors.red;
+  }
+
+  void restart() {
+    setState(() {
+      codes = [
+        Random().nextInt(10),
+        Random().nextInt(10),
+        Random().nextInt(10),
+        Random().nextInt(10),
+      ];
+      guesses = 0;
+      guessedCode = [0, 0, 0, 0];
+    });
+  }
 
   Future<void> _showMyDialog() async {
     return showDialog<void>(
@@ -32,17 +57,16 @@ class _MainAppState extends State<MainApp> {
             alignment: Alignment.center,
             child: Text("You won!"),
           ),
-          content: const SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('This is a demo alert dialog.'),
-                Text('Would you like to approve of this message?'),
-              ],
-            ),
-          ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Approve'),
+              child: const Text('Restart'),
+              onPressed: () {
+                restart();
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Close'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -84,37 +108,66 @@ class _MainAppState extends State<MainApp> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Counter(guessedCode[0], (value) {
-                      guessedCode[0] = value;
-                    }),
-                    Counter(guessedCode[1], (value) {
-                      guessedCode[1] = value;
-                    }),
-                    Counter(guessedCode[2], (value) {
-                      guessedCode[2] = value;
-                    }),
-                    Counter(guessedCode[3], (value) {
-                      guessedCode[3] = value;
-                    }),
+                    Counter(
+                      counter: guessedCode[0],
+                      textColor: setTextColor(guessedCode[0], codes[0]),
+                      disabled:
+                          guessedCode.join().toString() ==
+                          codes.join().toString(),
+                      numFn: (value) {
+                        guessedCode[0] = value;
+                      },
+                    ),
+                    Counter(
+                      counter: guessedCode[1],
+                      textColor: setTextColor(guessedCode[1], codes[1]),
+                      disabled:
+                          guessedCode.join().toString() ==
+                          codes.join().toString(),
+                      numFn: (value) {
+                        guessedCode[1] = value;
+                      },
+                    ),
+                    Counter(
+                      counter: guessedCode[2],
+                      textColor: setTextColor(guessedCode[2], codes[2]),
+                      disabled:
+                          guessedCode.join().toString() ==
+                          codes.join().toString(),
+                      numFn: (value) {
+                        guessedCode[2] = value;
+                      },
+                    ),
+                    Counter(
+                      counter: guessedCode[3],
+                      textColor: setTextColor(guessedCode[3], codes[3]),
+                      disabled:
+                          guessedCode.join().toString() ==
+                          codes.join().toString(),
+                      numFn: (value) {
+                        guessedCode[3] = value;
+                      },
+                    ),
                   ],
                 ),
               ),
               TextButton(
-                onPressed: () {
-                  setState(() {
-                    guesses++;
-                  });
+                onPressed:
+                    (guessedCode.join().toString() == codes.join().toString())
+                        ? null
+                        : () {
+                          setState(() {
+                            guesses++;
+                          });
 
-                  print(code);
-                  print(guessedCode.join());
-
-                  if (guessedCode.join().toString() == code.toString()) {
-                    _showMyDialog();
-                    setState(() {
-                      if (fewestGuesses <= guesses) fewestGuesses++;
-                    });
-                  }
-                },
+                          if (guessedCode.join().toString() ==
+                              codes.join().toString()) {
+                            _showMyDialog();
+                            setState(() {
+                              if (fewestGuesses <= guesses) fewestGuesses++;
+                            });
+                          }
+                        },
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.blueAccent,
                   disabledBackgroundColor: Colors.grey,
@@ -126,17 +179,14 @@ class _MainAppState extends State<MainApp> {
               ),
               TextButton(
                 onPressed: () {
-                  setState(() {
-                    guesses = 0;
-                    guessedCode = [0, 0, 0, 0];
-                  });
+                  restart();
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.amber,
                   disabledBackgroundColor: Colors.grey,
                 ),
                 child: const Text(
-                  "Reset",
+                  "Restart",
                   style: TextStyle(color: Colors.white),
                 ),
               ),
