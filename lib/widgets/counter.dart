@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 
 class Counter extends StatefulWidget {
-  Counter({
+  const Counter({
     this.counter = 0,
     this.textColor = Colors.black,
     this.disabled,
-    required this.numFn,
+    required this.incrementFn,
+    required this.decrementFn,
     super.key,
   });
 
-  int counter;
-  Color textColor;
+  final int counter;
+  final Color textColor;
   final bool? disabled;
-  final Function(int value) numFn;
+  final Function() incrementFn;
+  final Function() decrementFn;
 
   @override
   State<Counter> createState() => _NumberSelectorState();
@@ -25,16 +27,7 @@ class _NumberSelectorState extends State<Counter> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         TextButton(
-          onPressed:
-              widget.disabled == true
-                  ? null
-                  : () {
-                    setState(() {
-                      widget.counter = (widget.counter + 1) % 10;
-                      widget.textColor = Colors.black;
-                    });
-                    widget.numFn(widget.counter);
-                  },
+          onPressed: widget.disabled == true ? null : widget.incrementFn,
           child: Icon(Icons.arrow_drop_up, size: 48),
         ),
         Text(
@@ -42,16 +35,7 @@ class _NumberSelectorState extends State<Counter> {
           style: TextStyle(fontSize: 48, color: widget.textColor),
         ),
         TextButton(
-          onPressed:
-              widget.disabled == true
-                  ? null
-                  : () {
-                    setState(() {
-                      widget.counter = (widget.counter - 1) % 10;
-                      widget.textColor = Colors.black;
-                    });
-                    widget.numFn(widget.counter);
-                  },
+          onPressed: widget.disabled == true ? null : widget.decrementFn,
           child: Icon(Icons.arrow_drop_down, size: 48),
         ),
       ],

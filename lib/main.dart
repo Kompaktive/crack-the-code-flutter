@@ -26,12 +26,28 @@ class _MainAppState extends State<MainApp> {
     Random().nextInt(10),
   ];
   List<int> guessedCode = [0, 0, 0, 0];
+  List<bool> shouldValidateCodes = [false, false, false, false];
+  bool isGameOver = false;
 
-  Color setTextColor(int counter, int code) {
-    if (guesses == 0) return Colors.black;
+  Color setTextColor(int counter, int code, bool shouldValidate) {
+    if (guesses == 0 || !shouldValidate) return Colors.black;
     if (counter == code) return Colors.green;
-    if ((counter - code).abs() < 3) return Colors.amber;
+    if ((counter - code).abs() <= 1) return Colors.amber;
     return Colors.red;
+  }
+
+  void increment(int index) {
+    setState(() {
+      guessedCode[index] = (guessedCode[index] + 1) % 10;
+      shouldValidateCodes[index] = false;
+    });
+  }
+
+  void decrement(int index) {
+    setState(() {
+      guessedCode[index] = (guessedCode[index] - 1) % 10;
+      shouldValidateCodes[index] = false;
+    });
   }
 
   void restart() {
@@ -44,6 +60,8 @@ class _MainAppState extends State<MainApp> {
       ];
       guesses = 0;
       guessedCode = [0, 0, 0, 0];
+      shouldValidateCodes = [false, false, false, false];
+      isGameOver = false;
     });
   }
 
@@ -110,42 +128,62 @@ class _MainAppState extends State<MainApp> {
                   children: [
                     Counter(
                       counter: guessedCode[0],
-                      textColor: setTextColor(guessedCode[0], codes[0]),
-                      disabled:
-                          guessedCode.join().toString() ==
-                          codes.join().toString(),
-                      numFn: (value) {
-                        guessedCode[0] = value;
+                      textColor: setTextColor(
+                        guessedCode[0],
+                        codes[0],
+                        shouldValidateCodes[0],
+                      ),
+                      disabled: isGameOver,
+                      incrementFn: () {
+                        increment(0);
+                      },
+                      decrementFn: () {
+                        decrement(0);
                       },
                     ),
                     Counter(
                       counter: guessedCode[1],
-                      textColor: setTextColor(guessedCode[1], codes[1]),
-                      disabled:
-                          guessedCode.join().toString() ==
-                          codes.join().toString(),
-                      numFn: (value) {
-                        guessedCode[1] = value;
+                      textColor: setTextColor(
+                        guessedCode[1],
+                        codes[1],
+                        shouldValidateCodes[1],
+                      ),
+                      disabled: isGameOver,
+                      incrementFn: () {
+                        increment(1);
+                      },
+                      decrementFn: () {
+                        decrement(1);
                       },
                     ),
                     Counter(
                       counter: guessedCode[2],
-                      textColor: setTextColor(guessedCode[2], codes[2]),
-                      disabled:
-                          guessedCode.join().toString() ==
-                          codes.join().toString(),
-                      numFn: (value) {
-                        guessedCode[2] = value;
+                      textColor: setTextColor(
+                        guessedCode[2],
+                        codes[2],
+                        shouldValidateCodes[2],
+                      ),
+                      disabled: isGameOver,
+                      incrementFn: () {
+                        increment(2);
+                      },
+                      decrementFn: () {
+                        decrement(2);
                       },
                     ),
                     Counter(
                       counter: guessedCode[3],
-                      textColor: setTextColor(guessedCode[3], codes[3]),
-                      disabled:
-                          guessedCode.join().toString() ==
-                          codes.join().toString(),
-                      numFn: (value) {
-                        guessedCode[3] = value;
+                      textColor: setTextColor(
+                        guessedCode[3],
+                        codes[3],
+                        shouldValidateCodes[3],
+                      ),
+                      disabled: isGameOver,
+                      incrementFn: () {
+                        increment(3);
+                      },
+                      decrementFn: () {
+                        decrement(3);
                       },
                     ),
                   ],
@@ -153,18 +191,26 @@ class _MainAppState extends State<MainApp> {
               ),
               TextButton(
                 onPressed:
-                    (guessedCode.join().toString() == codes.join().toString())
+                    (isGameOver)
                         ? null
                         : () {
                           setState(() {
                             guesses++;
+                            shouldValidateCodes = [true, true, true, true];
+
+                            if (guessedCode.join().toString() ==
+                                codes.join().toString()) {
+                              isGameOver = true;
+                            }
                           });
 
-                          if (guessedCode.join().toString() ==
-                              codes.join().toString()) {
+                          if (isGameOver) {
                             _showMyDialog();
                             setState(() {
-                              if (fewestGuesses <= guesses) fewestGuesses++;
+                              if (fewestGuesses == 0 ||
+                                  guesses <= fewestGuesses) {
+                                fewestGuesses = guesses;
+                              }
                             });
                           }
                         },
@@ -188,6 +234,24 @@ class _MainAppState extends State<MainApp> {
                 child: const Text(
                   "Restart",
                   style: TextStyle(color: Colors.white),
+                ),
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("History:"),
+                        const Text("1. asdf"),
+                        const Text("2. asdf"),
+                        const Text("3. asdf"),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ],
