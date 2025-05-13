@@ -29,6 +29,9 @@ class _MainAppState extends State<MainApp> {
   List<bool> shouldValidateCodes = [false, false, false, false];
   bool isGameOver = false;
 
+  // history
+  List<Widget> _widgetList = [];
+
   Color setTextColor(int counter, int code, bool shouldValidate) {
     if (guesses == 0 || !shouldValidate) return Colors.black;
     if (counter == code) return Colors.green;
@@ -62,6 +65,7 @@ class _MainAppState extends State<MainApp> {
       guessedCode = [0, 0, 0, 0];
       shouldValidateCodes = [false, false, false, false];
       isGameOver = false;
+      _widgetList = [];
     });
   }
 
@@ -197,6 +201,56 @@ class _MainAppState extends State<MainApp> {
                           setState(() {
                             guesses++;
                             shouldValidateCodes = [true, true, true, true];
+                            // _widgetList.add(Text("$guesses. asdf"));
+                            _widgetList.add(
+                              Text.rich(
+                                TextSpan(
+                                  text: "$guesses. ",
+                                  children: <InlineSpan>[
+                                    TextSpan(
+                                      text: guessedCode[0].toString(),
+                                      style: TextStyle(
+                                        color: setTextColor(
+                                          guessedCode[0],
+                                          codes[0],
+                                          shouldValidateCodes[0],
+                                        ),
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: guessedCode[1].toString(),
+                                      style: TextStyle(
+                                        color: setTextColor(
+                                          guessedCode[1],
+                                          codes[1],
+                                          shouldValidateCodes[1],
+                                        ),
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: guessedCode[2].toString(),
+                                      style: TextStyle(
+                                        color: setTextColor(
+                                          guessedCode[2],
+                                          codes[2],
+                                          shouldValidateCodes[2],
+                                        ),
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: guessedCode[3].toString(),
+                                      style: TextStyle(
+                                        color: setTextColor(
+                                          guessedCode[3],
+                                          codes[3],
+                                          shouldValidateCodes[3],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
 
                             if (guessedCode.join().toString() ==
                                 codes.join().toString()) {
@@ -236,22 +290,17 @@ class _MainAppState extends State<MainApp> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("History:"),
-                        const Text("1. asdf"),
-                        const Text("2. asdf"),
-                        const Text("3. asdf"),
-                      ],
-                    ),
-                  ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: const Text("History:"),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: ListView(key: UniqueKey(), children: _widgetList),
                 ),
               ),
             ],
